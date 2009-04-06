@@ -16,3 +16,6 @@ $(EBIN_DIR)/%.beam: $(SOURCE_DIR)/%.erl $(INCLUDES)
 
 clean:
 	rm -f ebin/*.beam $(TARGETS)
+
+run: all
+	erl -pa $(EBIN_DIR) -boot start_sasl -s poa
