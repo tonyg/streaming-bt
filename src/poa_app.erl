@@ -5,7 +5,7 @@
 -export([start/2, stop/1]).
 
 start(_Type, _StartArgs) ->
-    poa:start_link(1234, []).
+    poa_sup:start_link().
 
 stop(_State) ->
     ok.

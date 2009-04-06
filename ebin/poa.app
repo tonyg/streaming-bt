@@ -10,4 +10,4 @@
   {registered, []},
   {mod, {poa_app, []}},
   {env, []},
-  {applications, [kernel, stdlib]}]}.
+  {applications, [kernel, stdlib, crypto]}]}.

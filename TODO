@@ -1,0 +1,3 @@
+Authentication (during enrollment).
+Encryption.
+ - Could both of these be delegated to SSL?

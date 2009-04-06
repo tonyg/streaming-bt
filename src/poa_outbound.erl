@@ -1,4 +1,4 @@
--module(poa_inbound).
+-module(poa_outbound).
 
 -behaviour(gen_server).
 
@@ -8,7 +8,8 @@
 
 %%---------------------------------------------------------------------------
 
-init([Sock, PoaPid]) ->
+init([{RemoteAddress, RemotePort}, PoaPid]) ->
+    {ok, Sock} = gen_tcp:connect(RemoteAddress, RemotePort, [binary, {packet, 4}]),
     {ok, #poa_link_state{sock = Sock,
                          poa_pid = PoaPid}}.
 
@@ -21,8 +22,6 @@ code_change(_OldVsn, State, _Extra) ->
 handle_call(Request, _From, State) ->
     {stop, {unhandled_call, Request}, State}.
 
-handle_cast({socket_control_transferred, Sock}, State = #poa_link_state{sock = Sock}) ->
-    {noreply, State};
 handle_cast(Request, State) ->
     {stop, {unhandled_cast, Request}, State}.
 
