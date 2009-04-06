@@ -205,6 +205,12 @@ handle_cast({link_up, RemoteNodeId, LinkPid, RemoteDirectory},
     %%                          dict:to_list(NewDirectory)}),
     {noreply, State#state{node_directory = NewDirectory,
                           established_links = NewEstablishedLinks}};
+handle_cast({link_down, RemoteNodeId, LinkPid, _Reason},
+            State = #state{established_links = EstablishedLinks,
+                           announce_queue = AnnounceQueue}) ->
+    {noreply, State#state{established_links = dict:erase(RemoteNodeId, EstablishedLinks),
+                          announce_queue = lists:filter(fun (E) -> E /= LinkPid end,
+                                                        AnnounceQueue)}};
 handle_cast({index_received, _RemoteNodeId, RemoteIndexSummary, LinkPid},
             State = #state{index = OldIndex}) ->
     ok = perform_gets(RemoteIndexSummary, LinkPid, OldIndex),

@@ -9,7 +9,7 @@
 %%---------------------------------------------------------------------------
 
 attempt_connection([], State = #poa_link_state{remote_addresses = RemoteNames}) ->
-    error_logger:warning_report({?MODULE, all_attempts_failed, RemoteNames}),
+    error_logger:warning_report({?MODULE, self(), all_attempts_failed, RemoteNames}),
     {ok, _TRef} = timer:send_after(?OUTBOUND_CONNECTION_RETRY_DELAY_MS,
                                    self(), check_connection),
     State;
@@ -52,5 +52,7 @@ handle_info(check_connection, State = #poa_link_state{sock = Sock,
     end;
 handle_info({tcp, _Sock, Packet}, State) ->
     {noreply, poa_link:handle_packet(Packet, State)};
+handle_info({tcp_closed, _Sock}, State) ->
+    {stop, normal, State};
 handle_info(Message, State) ->
     {stop, {unhandled_info, Message}, State}.

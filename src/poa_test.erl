@@ -14,10 +14,13 @@ injector_main(Poa, N) ->
     timer:sleep(1000),
     injector_main(Poa, N + 1).
 
-extractor(MyPort, OtherPort) ->
-    {ok, Poa} = poa:start_link([{{127,0,0,1},MyPort}], [{{127,0,0,1},OtherPort}]),
+sub1(Poa) ->
     poa:subscribe(Poa, extractor_key, fun (extractor_key, Messages) ->
                                               error_logger:info_report({?MODULE, extractor,
                                                                         Messages})
-                                      end),
+                                      end).
+
+extractor(MyPort, OtherPort) ->
+    {ok, Poa} = poa:start_link([{{127,0,0,1},MyPort}], [{{127,0,0,1},OtherPort}]),
+    sub1(Poa),
     {ok, Poa}.

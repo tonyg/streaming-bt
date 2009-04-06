@@ -31,5 +31,7 @@ handle_cast(Request, State) ->
 
 handle_info({tcp, _Sock, Packet}, State) ->
     {noreply, poa_link:handle_packet(Packet, State)};
+handle_info({tcp_closed, _Sock}, State) ->
+    {stop, normal, State};
 handle_info(Message, State) ->
     {stop, {unhandled_info, Message}, State}.
