@@ -27,11 +27,14 @@
 
 -behaviour(gen_server).
 
--export([start_link/5]).
+-export([start_link/5, get_socket/1]).
 -export([init/1, terminate/2, code_change/3, handle_call/3, handle_cast/2, handle_info/2]).
 
 start_link(Module, Host, Port, ListenOpts, ModuleOpts) ->
     gen_server:start_link(?MODULE, [Module, Host, Port, ListenOpts, ModuleOpts], []).
+
+get_socket(Pid) ->
+    gen_server:call(Pid, get_socket).
 
 %---------------------------------------------------------------------------
 
@@ -69,6 +72,8 @@ terminate(_Reason, State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
+handle_call(get_socket, _From, LSock) ->
+    {reply, {ok, LSock}, LSock};
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
