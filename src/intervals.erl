@@ -1,11 +1,17 @@
 -module(intervals).
 -export([empty/0, full/0, half/1, single_int/1, single_string/1, range/2, ranges/1]).
--export([is_element/2]).
+-export([foldl_int/3]).
+-export([is_element/2, is_empty/1]).
 -export([invert/1, merge/3, intersection/2, union/2, symmetric_difference/2, difference/2]).
 -export([first_fit/2]).
 
 empty() ->
     {false, []}.
+
+is_empty({false, []}) ->
+    true;
+is_empty(_) ->
+    false.
 
 full() ->
     {true, []}.
@@ -18,6 +24,16 @@ single_int(N) ->
 
 single_string(N) ->
     {false, [N, N ++ [0]]}.
+
+foldl_int(_F, Acc, {false, []}) ->
+    Acc;
+foldl_int(F, Acc, {false, [InStart, InStop | Rest]}) ->
+    foldl_int(F, foldl_int_inside(F, Acc, InStart, InStop), {false, Rest}).
+
+foldl_int_inside(_F, Acc, N, N) ->
+    Acc;
+foldl_int_inside(F, Acc, N, M) ->
+    foldl_int_inside(F, F(N, Acc), N + 1, M).
 
 range(inf, inf) ->
     full();

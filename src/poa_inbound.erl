@@ -9,10 +9,13 @@
 %%---------------------------------------------------------------------------
 
 init([Sock, PoaPid]) ->
+    process_flag(trap_exit, true),
     {ok, #poa_link_state{sock = Sock,
-                         poa_pid = PoaPid}}.
+                         poa_pid = PoaPid,
+                         remote_node_id = unknown}}.
 
-terminate(_Reason, _State) ->
+terminate(Reason, State) ->
+    poa_link:link_down(Reason, State),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->
@@ -22,9 +25,11 @@ handle_call(Request, _From, State) ->
     {stop, {unhandled_call, Request}, State}.
 
 handle_cast({socket_control_transferred, Sock}, State = #poa_link_state{sock = Sock}) ->
-    {noreply, State};
+    {noreply, poa_link:link_up(State)};
 handle_cast(Request, State) ->
-    {stop, {unhandled_cast, Request}, State}.
+    poa_link:handle_cast(Request, State).
 
+handle_info({tcp, _Sock, Packet}, State) ->
+    {noreply, poa_link:handle_packet(Packet, State)};
 handle_info(Message, State) ->
     {stop, {unhandled_info, Message}, State}.
