@@ -15,7 +15,7 @@ $(EBIN_DIR)/%.beam: $(SOURCE_DIR)/%.erl $(INCLUDES)
 	erlc $(ERLC_OPTS) $<
 
 clean:
-	rm -f ebin/*.beam $(TARGETS)
+	rm -f ebin/*.beam $(TARGETS) erl_crash.dump
 
 run: all
 	erl -pa $(EBIN_DIR) -boot start_sasl -s poa
